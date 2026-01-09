@@ -3,6 +3,10 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  define: {
+    __DEFINES__: {},
+    global: 'globalThis',
+  },
   server: {
     port: 5173,
     host: true,
@@ -24,5 +28,12 @@ export default defineConfig({
         },
       }
     }
-  }
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: undefined,
+      },
+    },
+  },
 })
