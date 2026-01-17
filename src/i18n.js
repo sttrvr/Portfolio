@@ -135,7 +135,9 @@ const resources = {
                 }
             },
             "footer": {
-                "created_with": "Created with precision and care."
+                "created_with": "Created with precision and care.",
+                "visitors": "visitors",
+                "first_visit": "Your first visit"
             },
             "themes": {
                 "light": "Light mode",
@@ -283,7 +285,9 @@ const resources = {
                 }
             },
             "footer": {
-                "created_with": "Создано с точностью и заботой."
+                "created_with": "Создано с точностью и заботой.",
+                "visitors": "посетителей",
+                "first_visit": "Ваш первый визит"
             },
             "themes": {
                 "light": "Светлая тема",
@@ -431,7 +435,9 @@ const resources = {
                 }
             },
             "footer": {
-                "created_with": "Aniqlik va g'amxo'rllik bilan yaratilgan."
+                "created_with": "Aniqlik va g'amxo'rllik bilan yaratilgan.",
+                "visitors": "tashrif buyuruvchilar",
+                "first_visit": "Sizning birinchi tashrifingiz"
             },
             "themes": {
                 "light": "Yorug' rejim",

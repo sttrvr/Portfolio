@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import Navbar from './components/Navbar'
 import LoadingOverlay from './components/LoadingOverlay'
+import VisitorCounter from './components/VisitorCounter'
 
 export default function App() {
   const { t } = useTranslation()
@@ -50,6 +51,7 @@ export default function App() {
         >
           © {new Date().getFullYear()} {t('footer.created_with')}
         </motion.p>
+        <VisitorCounter />
       </footer>
     </div>
   )
