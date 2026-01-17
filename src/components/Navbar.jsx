@@ -1,11 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link, useLocation } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 
 export default function Navbar() {
+  const { t, i18n } = useTranslation()
   const [open, setOpen] = useState(false)
   const [themeDropdownOpen, setThemeDropdownOpen] = useState(false)
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false)
   const themeDropdownRef = useRef(null)
+  const langDropdownRef = useRef(null)
   const [theme, setTheme] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('theme')
@@ -31,6 +35,7 @@ export default function Navbar() {
   const close = () => {
     setOpen(false)
     setThemeDropdownOpen(false)
+    setLangDropdownOpen(false)
   }
 
   // Click outside handler for theme dropdown
@@ -38,6 +43,9 @@ export default function Navbar() {
     const handleClickOutside = (event) => {
       if (themeDropdownRef.current && !themeDropdownRef.current.contains(event.target)) {
         setThemeDropdownOpen(false)
+      }
+      if (langDropdownRef.current && !langDropdownRef.current.contains(event.target)) {
+        setLangDropdownOpen(false)
       }
     }
 
@@ -64,7 +72,7 @@ export default function Navbar() {
           }
         }
       }
-      
+
       mediaQuery.addEventListener('change', handleChange)
       return () => mediaQuery.removeEventListener('change', handleChange)
     }
@@ -73,7 +81,7 @@ export default function Navbar() {
   // Theme o'zgartirish funksiyasi
   const setThemeMode = (newTheme) => {
     setTheme(newTheme === 'system' ? systemTheme : newTheme)
-    
+
     // HTML elementiga class qo'shish/olib tashlash
     const html = document.documentElement
     const actualTheme = newTheme === 'system' ? systemTheme : newTheme
@@ -82,7 +90,7 @@ export default function Navbar() {
     } else {
       html.classList.remove('dark')
     }
-    
+
     // localStorage ga saqlash
     localStorage.setItem('theme', newTheme)
     setThemeDropdownOpen(false)
@@ -135,24 +143,35 @@ export default function Navbar() {
   }
 
   const themeOptions = [
-    { value: 'light', label: 'Yorug\' rejim', icon: getThemeIcon('light') },
-    { value: 'dark', label: 'Qorong\'u rejim', icon: getThemeIcon('dark') },
-    { value: 'system', label: 'System rejimi', icon: getThemeIcon('system') }
+    { value: 'light', label: t('themes.light'), icon: getThemeIcon('light') },
+    { value: 'dark', label: t('themes.dark'), icon: getThemeIcon('dark') },
+    { value: 'system', label: t('themes.system'), icon: getThemeIcon('system') }
   ]
+
+  const langOptions = [
+    { value: 'en', label: 'ENG', fullName: t('languages.en') },
+    { value: 'ru', label: 'RUS', fullName: t('languages.ru') },
+    { value: 'uz', label: 'UZB', fullName: t('languages.uz') }
+  ]
+
+  const changeLanguage = (lng) => {
+    i18n.changeLanguage(lng)
+    setLangDropdownOpen(false)
+  }
 
   // Sahifa yuklanganda theme ni qo'llash
   useEffect(() => {
     const html = document.documentElement
     const savedTheme = localStorage.getItem('theme')
-    
+
     // Agar hech narsa saqlanmagan bo'lsa, system rejimini default qilamiz
     if (!savedTheme) {
       localStorage.setItem('theme', 'system')
     }
-    
+
     // Avval barcha theme classlarini tozalash
     html.classList.remove('dark', 'light')
-    
+
     // Kerakli theme ni qo'llash
     if (theme === 'dark') {
       html.classList.add('dark')
@@ -160,25 +179,25 @@ export default function Navbar() {
   }, [theme])
 
   const navItems = [
-    { to: '/about', label: 'Men haqimda' },
-    { to: '/projects', label: 'Loyihalar' },
-    { to: '/skills', label: 'Mahoratlar' },
-    { to: '/lumaai', label: 'AI Chat' },
-    { to: '/contact', label: 'Aloqa' },
+    { to: '/about', label: t('navbar.about') },
+    { to: '/projects', label: t('navbar.projects') },
+    { to: '/skills', label: t('navbar.skills') },
+    { to: '/lumaai', label: t('navbar.ai_chat') },
+    { to: '/contact', label: t('navbar.contact') },
   ]
 
   const mobileNavItems = [
-    { to: '/', label: 'Bosh sahifa' },
+    { to: '/', label: t('navbar.home') },
     ...navItems
   ]
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50">
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 pt-4">
-        <motion.nav 
-          initial={{ opacity: 0, y: -30 }} 
-          animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }} 
+        <motion.nav
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="relative flex items-center justify-between rounded-2xl border border-gray-200/30 bg-white/80 px-5 py-3 backdrop-blur-md dark:border-gray-700/30 dark:bg-gray-900/80"
         >
           {/* Logo - Absolute position */}
@@ -186,8 +205,8 @@ export default function Navbar() {
             <motion.div
               initial={{ scale: 0, rotate: -180 }}
               animate={{ scale: 1, rotate: 0 }}
-              transition={{ 
-                duration: 0.6, 
+              transition={{
+                duration: 0.6,
                 delay: 0.1,
                 type: "spring",
                 stiffness: 200,
@@ -203,7 +222,7 @@ export default function Navbar() {
                   e.target.nextSibling.style.display = 'flex';
                 }}
               />
-              <div 
+              <div
                 className="w-20 h-20 rounded-xl bg-gradient-to-br from-gray-800 to-gray-900 items-center justify-center hidden"
               >
                 <span className="text-white font-bold text-3xl">R</span>
@@ -223,13 +242,12 @@ export default function Navbar() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, delay: 0.1 + i * 0.05 }}
               >
-                <Link 
-                  to={item.to} 
-                  className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    location.pathname === item.to 
-                      ? 'text-gray-900 bg-gray-100 dark:text-white dark:bg-gray-800' 
+                <Link
+                  to={item.to}
+                  className={`relative px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${location.pathname === item.to
+                      ? 'text-gray-900 bg-gray-100 dark:text-white dark:bg-gray-800'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800'
-                  }`}
+                    }`}
                 >
                   {item.label}
                   {location.pathname === item.to && (
@@ -242,7 +260,61 @@ export default function Navbar() {
                 </Link>
               </motion.div>
             ))}
-            
+
+            {/* Language Switcher - Dropdown */}
+            <div className="relative" ref={langDropdownRef}>
+              <button
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                className="relative flex items-center justify-center gap-1.5 px-3 h-10 rounded-xl text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-all group dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" />
+                </svg>
+                <span className="text-xs font-bold uppercase">{i18n.language}</span>
+                <svg
+                  className={`w-3 h-3 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <AnimatePresence>
+                {langDropdownOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute right-0 top-12 w-32 rounded-xl border border-gray-200/30 bg-white/95 backdrop-blur-sm shadow-lg dark:border-gray-700/30 dark:bg-gray-900/95"
+                  >
+                    <div className="p-2">
+                      {langOptions.map((option) => (
+                        <button
+                          key={option.value}
+                          onClick={() => changeLanguage(option.value)}
+                          className={`flex items-center justify-between w-full px-3 py-2 rounded-lg text-sm font-medium transition-all ${i18n.language === option.value
+                              ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
+                              : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800'
+                            }`}
+                        >
+                          <span>{option.label}</span>
+                          {i18n.language === option.value && (
+                            <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             {/* Theme Switcher - Dropdown */}
             <div className="relative" ref={themeDropdownRef}>
               <button
@@ -274,11 +346,11 @@ export default function Navbar() {
                   getThemeIcon(getCurrentThemeMode())
                 )}
                 {/* Dropdown strelkasi */}
-                <svg 
-                  className={`w-3 h-3 transition-transform ${themeDropdownOpen ? 'rotate-180' : ''}`} 
-                  fill="none" 
-                  stroke="currentColor" 
-                  viewBox="0 0 24 24" 
+                <svg
+                  className={`w-3 h-3 transition-transform ${themeDropdownOpen ? 'rotate-180' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                   strokeWidth={2}
                 >
                   <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
@@ -300,11 +372,10 @@ export default function Navbar() {
                         <button
                           key={option.value}
                           onClick={() => setThemeMode(option.value)}
-                          className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                            getCurrentThemeMode() === option.value
+                          className={`flex items-center gap-3 w-full px-3 py-2 rounded-lg text-sm font-medium transition-all ${getCurrentThemeMode() === option.value
                               ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white'
                               : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800'
-                          }`}
+                            }`}
                         >
                           {option.icon}
                           {option.label}
@@ -323,30 +394,30 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Menu Button */}
-          <motion.button 
+          <motion.button
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            onClick={() => setOpen(!open)} 
+            onClick={() => setOpen(!open)}
             className="md:hidden relative w-10 h-10 flex items-center justify-center rounded-xl hover:bg-gray-100 transition-colors dark:hover:bg-gray-800"
           >
             <div className="flex flex-col gap-1.5">
-              <motion.span 
-                animate={{ 
-                  rotate: open ? 45 : 0, 
+              <motion.span
+                animate={{
+                  rotate: open ? 45 : 0,
                   y: open ? 6 : 0,
                   width: open ? 20 : 18
                 }}
                 className="block h-0.5 bg-gray-700 rounded-full origin-center dark:bg-gray-300"
                 style={{ width: 18 }}
               />
-              <motion.span 
+              <motion.span
                 animate={{ opacity: open ? 0 : 1, x: open ? -10 : 0 }}
                 className="block w-4 h-0.5 bg-gray-700 rounded-full dark:bg-gray-300"
               />
-              <motion.span 
-                animate={{ 
-                  rotate: open ? -45 : 0, 
+              <motion.span
+                animate={{
+                  rotate: open ? -45 : 0,
                   y: open ? -6 : 0,
                   width: open ? 20 : 14
                 }}
@@ -361,11 +432,11 @@ export default function Navbar() {
       {/* Mobile Menu */}
       <AnimatePresence>
         {open && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20, scale: 0.95 }} 
-            animate={{ opacity: 1, y: 0, scale: 1 }} 
-            exit={{ opacity: 0, y: -20, scale: 0.95 }} 
-            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }} 
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className="mx-4 sm:mx-6 mt-2 rounded-2xl border border-gray-200/30 bg-white/95 p-4 backdrop-blur-sm md:hidden max-w-7xl sm:mx-auto dark:border-gray-700/30 dark:bg-gray-900/95"
           >
             <div className="flex flex-col gap-1">
@@ -379,17 +450,16 @@ export default function Navbar() {
                   <Link
                     to={item.to}
                     onClick={close}
-                    className={`flex items-center gap-3 rounded-xl px-4 py-3 font-medium transition-all ${
-                      location.pathname === item.to 
-                        ? 'bg-gray-900 text-white dark:bg-gray-700' 
+                    className={`flex items-center gap-3 rounded-xl px-4 py-3 font-medium transition-all ${location.pathname === item.to
+                        ? 'bg-gray-900 text-white dark:bg-gray-700'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800'
-                    }`}
+                      }`}
                   >
                     {item.label}
                   </Link>
                 </motion.div>
               ))}
-              
+
               {/* Mobile Theme Switcher - Dropdown */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
@@ -398,17 +468,16 @@ export default function Navbar() {
                 className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700"
               >
                 <div className="px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400">
-                  Tema
+                  {t('themes.title')}
                 </div>
                 {themeOptions.map((option) => (
                   <button
                     key={option.value}
                     onClick={() => setThemeMode(option.value)}
-                    className={`flex items-center gap-3 rounded-xl px-4 py-3 font-medium transition-all w-full ${
-                      getCurrentThemeMode() === option.value
+                    className={`flex items-center gap-3 rounded-xl px-4 py-3 font-medium transition-all w-full ${getCurrentThemeMode() === option.value
                         ? 'bg-gray-900 text-white dark:bg-gray-700'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800'
-                    }`}
+                      }`}
                   >
                     {option.icon}
                     {option.label}
@@ -419,6 +488,36 @@ export default function Navbar() {
                     )}
                   </button>
                 ))}
+              </motion.div>
+
+              {/* Mobile Language Switcher */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: (mobileNavItems.length + 1) * 0.05 }}
+                className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700"
+              >
+                <div className="px-4 py-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {t('languages.title')}
+                </div>
+                <div className="grid grid-cols-3 gap-2 px-2">
+                  {langOptions.map((option) => (
+                    <button
+                      key={option.value}
+                      onClick={() => {
+                        changeLanguage(option.value)
+                        setOpen(false)
+                      }}
+                      className={`flex flex-col items-center justify-center gap-1 rounded-xl py-3 font-medium transition-all ${i18n.language === option.value
+                          ? 'bg-gray-900 text-white dark:bg-gray-700'
+                          : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800'
+                        }`}
+                    >
+                      <span className="text-sm font-bold">{option.label}</span>
+                      <span className="text-[10px] opacity-60 uppercase">{option.fullName}</span>
+                    </button>
+                  ))}
+                </div>
               </motion.div>
             </div>
           </motion.div>

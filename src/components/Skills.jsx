@@ -1,9 +1,10 @@
 import { motion, useScroll, useTransform } from 'framer-motion'
 import { useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
-const skillCategories = [
+const getSkillCategories = (t) => [
   {
-    title: 'Frontend Dasturlash',
+    title: t('skills.categories.frontend'),
     skills: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
     icon: (
       <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -12,7 +13,7 @@ const skillCategories = [
     )
   },
   {
-    title: 'Animatsiya va Harakat',
+    title: t('skills.categories.motion'),
     skills: ['Framer Motion', 'GSAP', 'Lenis', 'CSS Animatsiyalar'],
     icon: (
       <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -21,7 +22,7 @@ const skillCategories = [
     )
   },
   {
-    title: 'Dizayn va UX',
+    title: t('skills.categories.design'),
     skills: ['Figma', 'Adobe Creative Suite', 'Prototiplash', 'Foydalanuvchi Tadqiqoti'],
     icon: (
       <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -30,7 +31,7 @@ const skillCategories = [
     )
   },
   {
-    title: 'Backend va Vositalar',
+    title: t('skills.categories.backend'),
     skills: ['Node.js', 'MongoDB', 'Git', 'Webpack'],
     icon: (
       <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
@@ -41,16 +42,18 @@ const skillCategories = [
 ]
 
 export default function Skills() {
+  const { t } = useTranslation()
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const y1 = useTransform(scrollYProgress, [0, 1], [0, -50])
   const y2 = useTransform(scrollYProgress, [0, 1], [0, -100])
+  const skillCategories = getSkillCategories(t)
 
   return (
     <section id="skills" ref={ref} className="relative w-full bg-gray-50 dark:bg-gray-800 py-32">
       {/* Apple-style background */}
       <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
-      
+
       <div className="relative mx-auto max-w-6xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -59,9 +62,9 @@ export default function Skills() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="mb-16 text-center"
         >
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">Mahoratlar</h2>
+          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">{t('skills.title')}</h2>
           <p className="text-xl text-gray-600 dark:text-gray-300 font-light max-w-2xl mx-auto">
-            Zamonaviy, samarali va chiroyli veb-tajribalar yaratish uchun keng qamrovli vositalar to'plami.
+            {t('skills.subtitle')}
           </p>
         </motion.div>
 
@@ -82,7 +85,7 @@ export default function Skills() {
                 </div>
                 <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">{category.title}</h3>
               </div>
-              
+
               <div className="flex flex-wrap gap-3">
                 {category.skills.map((skill, idx) => (
                   <motion.span
@@ -110,29 +113,10 @@ export default function Skills() {
           transition={{ duration: 0.8, delay: 0.4 }}
           className="mt-20"
         >
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-12 text-center">Tajriba</h3>
-          
+          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-12 text-center">{t('skills.experience.title')}</h3>
+
           <div className="space-y-8">
-            {[
-              {
-                year: '2024',
-                title: 'Katta Frontend Dasturchi',
-                company: 'Texnologik Startap',
-                description: 'Zamonaviy freymvorklar bilan javobgar veb-ilovalar ishlab chiqishni boshqardim.'
-              },
-              {
-                year: '2023',
-                title: 'UI/UX Dizayner',
-                company: 'Dizayn Agentligi',
-                description: 'Turli mijozlar uchun foydalanuvchi-markazli dizaynlar va interaktiv prototiplar yaratdim.'
-              },
-              {
-                year: '2022',
-                title: 'Frontend Dasturchi',
-                company: 'Dasturiy Ta\'minot Kompaniyasi',
-                description: 'React va zamonaviy CSS freymvorklari yordamida veb-ilovalar yaratdim va qo\'llab-quvvatladim.'
-              }
-            ].map((exp, i) => (
+            {t('skills.experience.items', { returnObjects: true }).map((exp, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, x: -40 }}
@@ -148,7 +132,7 @@ export default function Skills() {
                 <div className="flex-1">
                   <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">{exp.title}</h4>
                   <p className="text-gray-600 dark:text-gray-300 font-medium mb-2">{exp.company}</p>
-                  <p className="text-gray-600 dark:text-gray-300 font-light">{exp.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 font-light">{exp.desc}</p>
                 </div>
               </motion.div>
             ))}

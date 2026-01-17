@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 import Navbar from './components/Navbar'
 import LoadingOverlay from './components/LoadingOverlay'
 
 export default function App() {
+  const { t } = useTranslation()
   const location = useLocation()
   const [loading, setLoading] = useState(false)
 
@@ -27,11 +29,11 @@ export default function App() {
 
       <div className="pt-16">
         <AnimatePresence mode="wait">
-          <motion.div 
-            key={location.pathname} 
-            initial={{ opacity: 0, y: 20 }} 
-            animate={{ opacity: 1, y: 0 }} 
-            exit={{ opacity: 0, y: -20 }} 
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
             <Outlet />
@@ -40,13 +42,13 @@ export default function App() {
       </div>
 
       <footer className="relative border-t border-gray-200 bg-gray-50/80 py-12 text-center backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80">
-        <motion.p 
-          initial={{ opacity: 0 }} 
-          whileInView={{ opacity: 1 }} 
-          viewport={{ once: true }} 
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
           className="text-gray-600 font-light dark:text-gray-400"
         >
-          © {new Date().getFullYear()} Aniqlik va g'amxo'rlik bilan yaratilgan.
+          © {new Date().getFullYear()} {t('footer.created_with')}
         </motion.p>
       </footer>
     </div>
