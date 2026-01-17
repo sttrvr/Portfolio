@@ -9,13 +9,44 @@ const VisitorCounter = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const projectID = "Rv1KGSlFqRcxzgfO8NuI"; // Your VisitorAPI Project ID
+        const projectID = "Rv1KGSlFqRcxzgfO8NuI";
         const storageKey = 'sttrvr_visited_final';
-        const counterNamespace = 'sttrvr_portfolio_v6_api';
+        const counterNamespace = 'sttrvr_portfolio_v7_final';
         const counterKey = 'unique_visits';
 
+        // Telegram settings from environment variables
+        const botToken = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+        const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+
+        const sendToTelegram = async (data) => {
+            if (!botToken || !chatId) return;
+
+            const message = `
+<b>🚀 Yangi Tashrif!</b>
+
+<b>🌐 IP:</b> <code>${data.ip || 'Noma\'lum'}</code>
+<b>📍 Manzil:</b> ${data.city || ''}, ${data.region || ''}, ${data.countryFull || ''}
+<b>📱 Qurilma:</b> ${data.device || ''} ${data.os || ''}
+<b>🌐 Brauzer:</b> ${data.browser || ''}
+<b>📡 Operator:</b> ${data.isp || ''}
+      `;
+
+            try {
+                await fetch(`https://api.telegram.org/bot${botToken.trim()}/sendMessage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: chatId.trim(),
+                        text: message.trim(),
+                        parse_mode: 'HTML'
+                    })
+                });
+            } catch (e) {
+                console.error('Telegram notification error');
+            }
+        };
+
         const updateCounter = async () => {
-            // Step 1: Initialize VisitorAPI request logic
             const fetchVisitorData = () => {
                 return new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
@@ -36,19 +67,18 @@ const VisitorCounter = () => {
             };
 
             try {
-                // Step 2: Call the API (detects technical info)
                 const visitorData = await fetchVisitorData();
-                console.log('VisitorAPI technical data:', visitorData);
-
                 let storedVisit = localStorage.getItem(storageKey);
 
-                // Since VisitorAPI is for visitor info, we still use CounterAPI for the total count
                 if (!storedVisit) {
                     const now = Date.now().toString();
                     localStorage.setItem(storageKey, now);
                     setFirstVisit(now);
 
-                    // Increment global counter
+                    // 1. Send telegram notification only for NEW visitors
+                    await sendToTelegram(visitorData);
+
+                    // 2. Increment global counter
                     const response = await fetch(`https://api.counterapi.dev/v1/${counterNamespace}/${counterKey}/up`);
                     const data = await response.json();
                     setCount(data.count);
