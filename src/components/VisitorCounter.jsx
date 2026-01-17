@@ -6,29 +6,33 @@ const VisitorCounter = () => {
     const { t, i18n } = useTranslation();
     const [count, setCount] = useState(null);
     const [firstVisit, setFirstVisit] = useState(null);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // We use counterapi.dev which is simple and free
-        const namespace = 'sttrvr_portfolio_unique';
-        const key = 'main_visits';
-        const storageKey = 'sttrvr_visited_v1';
+        // Unique namespace to reset the counter to 1 for you
+        const namespace = 'sttrvr_portfolio_v4_pure';
+        const key = 'visits';
+        const storageKey = 'sttrvr_visited_final';
 
         const updateCounter = async () => {
             try {
-                const storedVisit = localStorage.getItem(storageKey);
+                let storedVisit = localStorage.getItem(storageKey);
 
+                // If it's a new visitor (no storage key)
                 if (!storedVisit) {
-                    // First time visit for this browser - increment
+                    // 1. IMMEDIATELY mark as visited to prevent race conditions on refresh
+                    const now = Date.now().toString();
+                    localStorage.setItem(storageKey, now);
+                    setFirstVisit(now);
+
+                    // 2. Increment the counter on the server
                     const response = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`);
                     const data = await response.json();
                     if (data.count !== undefined) {
                         setCount(data.count);
-                        const now = Date.now().toString();
-                        localStorage.setItem(storageKey, now);
-                        setFirstVisit(now);
                     }
                 } else {
-                    // Already visited - just fetch the current count
+                    // If returning visitor, just get the current count without incrementing
                     setFirstVisit(storedVisit);
                     const response = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}`);
                     const data = await response.json();
@@ -37,8 +41,9 @@ const VisitorCounter = () => {
                     }
                 }
             } catch (error) {
-                // Quietly fail if API is down
-                console.warn('Visitor counter unavailable');
+                console.warn('Counter API error');
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -55,26 +60,23 @@ const VisitorCounter = () => {
         });
     };
 
-    if (count === null) return null;
-
     return (
         <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-6 flex flex-col items-center justify-center gap-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-6 flex flex-col items-center justify-center gap-3 min-h-[40px]"
         >
             <div className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white/50 px-3 py-1 text-[11px] font-medium text-gray-500 backdrop-blur-sm transition-all hover:border-gray-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-white/20">
                 <div className="relative flex h-2 w-2">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75"></span>
-                    <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500"></span>
+                    <span className={`absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 ${!loading ? 'animate-ping' : ''}`}></span>
+                    <span className={`relative inline-flex h-2 w-2 rounded-full ${loading ? 'bg-gray-400' : 'bg-green-500'}`}></span>
                 </div>
                 <span className="tracking-wide uppercase">
-                    {count.toLocaleString()} {t('footer.visitors')}
+                    {loading ? '...' : (count?.toLocaleString() || '1')} {t('footer.visitors')}
                 </span>
             </div>
 
-            {firstVisit && (
+            {firstVisit && !loading && (
                 <motion.p
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
