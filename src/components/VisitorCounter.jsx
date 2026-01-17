@@ -9,39 +9,58 @@ const VisitorCounter = () => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Unique namespace to reset the counter to 1 for you
-        const namespace = 'sttrvr_portfolio_v4_pure';
-        const key = 'visits';
+        const projectID = "Rv1KGSlFqRcxzgfO8NuI"; // Your VisitorAPI Project ID
         const storageKey = 'sttrvr_visited_final';
+        const counterNamespace = 'sttrvr_portfolio_v6_api';
+        const counterKey = 'unique_visits';
 
         const updateCounter = async () => {
+            // Step 1: Initialize VisitorAPI request logic
+            const fetchVisitorData = () => {
+                return new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            if (xhr.status === 200) {
+                                const response = JSON.parse(xhr.responseText);
+                                if (response.status === 200) resolve(response.data);
+                                else reject(response.result);
+                            } else {
+                                reject("API Error");
+                            }
+                        }
+                    };
+                    xhr.open("GET", `https://api.visitorapi.com/api/?pid=${projectID}`);
+                    xhr.send(null);
+                });
+            };
+
             try {
+                // Step 2: Call the API (detects technical info)
+                const visitorData = await fetchVisitorData();
+                console.log('VisitorAPI technical data:', visitorData);
+
                 let storedVisit = localStorage.getItem(storageKey);
 
-                // If it's a new visitor (no storage key)
+                // Since VisitorAPI is for visitor info, we still use CounterAPI for the total count
                 if (!storedVisit) {
-                    // 1. IMMEDIATELY mark as visited to prevent race conditions on refresh
                     const now = Date.now().toString();
                     localStorage.setItem(storageKey, now);
                     setFirstVisit(now);
 
-                    // 2. Increment the counter on the server
-                    const response = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}/up`);
+                    // Increment global counter
+                    const response = await fetch(`https://api.counterapi.dev/v1/${counterNamespace}/${counterKey}/up`);
                     const data = await response.json();
-                    if (data.count !== undefined) {
-                        setCount(data.count);
-                    }
+                    setCount(data.count);
                 } else {
-                    // If returning visitor, just get the current count without incrementing
                     setFirstVisit(storedVisit);
-                    const response = await fetch(`https://api.counterapi.dev/v1/${namespace}/${key}`);
+                    // Just fetch current count
+                    const response = await fetch(`https://api.counterapi.dev/v1/${counterNamespace}/${counterKey}`);
                     const data = await response.json();
-                    if (data.count !== undefined) {
-                        setCount(data.count);
-                    }
+                    setCount(data.count);
                 }
             } catch (error) {
-                console.warn('Counter API error');
+                console.error('VisitorAPI Error:', error);
             } finally {
                 setLoading(false);
             }
@@ -72,7 +91,7 @@ const VisitorCounter = () => {
                     <span className={`relative inline-flex h-2 w-2 rounded-full ${loading ? 'bg-gray-400' : 'bg-green-500'}`}></span>
                 </div>
                 <span className="tracking-wide uppercase">
-                    {loading ? '...' : (count?.toLocaleString() || '1')} {t('footer.visitors')}
+                    {loading ? '...' : (count || '1')} {t('footer.visitors')}
                 </span>
             </div>
 
