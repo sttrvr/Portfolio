@@ -1,143 +1,134 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import SpotlightCard from './SpotlightCard'
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+  }
+}
 
 const getSkillCategories = (t) => [
   {
     title: t('skills.categories.frontend'),
     skills: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS'],
-    icon: (
-      <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
-      </svg>
-    )
   },
   {
     title: t('skills.categories.motion'),
-    skills: ['Framer Motion', 'GSAP', 'Lenis', 'CSS Animatsiyalar'],
-    icon: (
-      <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-      </svg>
-    )
+    skills: ['Framer Motion', 'GSAP', 'Three.js', 'GLSL'],
   },
   {
     title: t('skills.categories.design'),
-    skills: ['Figma', 'Adobe Creative Suite', 'Prototiplash', 'Foydalanuvchi Tadqiqoti'],
-    icon: (
-      <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" />
-      </svg>
-    )
+    skills: ['Figma', 'UX Strategy', 'Design Systems'],
   },
   {
     title: t('skills.categories.backend'),
-    skills: ['Node.js', 'MongoDB', 'Git', 'Webpack'],
-    icon: (
-      <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12a7.5 7.5 0 0015 0m-15 0a7.5 7.5 0 1115 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077l1.41-.513m14.095-5.13l1.41-.513M5.106 17.785l1.15-.964m11.49-9.642l1.149-.964M7.501 19.795l.75-1.3m7.5-12.99l.75-1.3m-6.063 16.658l.26-1.477m2.605-14.772l.26-1.477m0 17.726l-.26-1.477M10.698 4.614l-.26-1.477M16.5 19.794l-.75-1.299M7.5 4.205L12 12m6.894 5.785l-1.149-.964M6.256 7.178l-1.15-.964m15.352 8.864l-1.41-.513M4.954 9.435l-1.41-.514M12.002 12l-3.75 6.495" />
-      </svg>
-    )
+    skills: ['Node.js', 'PostgreSQL', 'Redis', 'WebSockets'],
   }
 ]
 
 export default function Skills() {
   const { t } = useTranslation()
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -50])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -100])
   const skillCategories = getSkillCategories(t)
 
   return (
-    <section id="skills" ref={ref} className="relative w-full bg-gray-50 dark:bg-gray-800 py-32">
-      {/* Apple-style background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
-
-      <div className="relative mx-auto max-w-6xl px-6">
+    <section id="skills" className="relative w-full bg-white dark:bg-[#000] py-40 overflow-hidden transition-colors duration-500">
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-16 text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            visible: { transition: { staggerChildren: 0.1 } }
+          }}
+          className="flex flex-col items-center text-center mb-32"
         >
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-4">{t('skills.title')}</h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 font-light max-w-2xl mx-auto">
+          <motion.div variants={fadeUp} className="inline-flex items-center gap-4 mb-8">
+            <div className="h-[2px] w-12 bg-indigo-500" />
+            <span className="text-indigo-500 font-black text-[11px] uppercase tracking-[0.5em]">Capabilities</span>
+            <div className="h-[2px] w-12 bg-indigo-500" />
+          </motion.div>
+
+          <motion.h2
+            variants={fadeUp}
+            className="text-5xl sm:text-6xl md:text-8xl font-black tracking-tighter text-slate-900 dark:text-white mb-10 transition-colors duration-500"
+          >
+            EXPERTISE
+          </motion.h2>
+
+          <motion.p variants={fadeUp} className="text-2xl text-slate-500 dark:text-slate-400 font-medium max-w-2xl opacity-90 leading-normal italic">
             {t('skills.subtitle')}
-          </p>
+          </motion.p>
         </motion.div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {skillCategories.map((category, i) => (
-            <motion.div
-              key={i}
-              style={{ y: i % 2 === 0 ? y1 : y2 }}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: i * 0.1 }}
-              className="group rounded-3xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 p-8 shadow-sm hover:shadow-lg backdrop-blur-sm transition-all duration-500"
-            >
-              <div className="mb-6 flex items-center gap-4">
-                <div className="h-12 w-12 rounded-2xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center">
-                  {category.icon}
+            <motion.div key={i} variants={fadeUp}>
+              <SpotlightCard
+                spotlightColor="rgba(99, 102, 241, 0.1)"
+                className="h-full p-12 flex flex-col items-center text-center border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01] rounded-[48px]"
+              >
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-10 tracking-tight leading-none uppercase italic">
+                  {category.title}
+                </h3>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {category.skills.map((skill, idx) => (
+                    <span
+                      key={idx}
+                      className="px-5 py-2 text-[10px] font-black text-slate-600 dark:text-slate-400 bg-white dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 rounded-full uppercase tracking-widest"
+                    >
+                      {skill}
+                    </span>
+                  ))}
                 </div>
-                <h3 className="text-2xl font-semibold text-gray-900 dark:text-white">{category.title}</h3>
-              </div>
-
-              <div className="flex flex-wrap gap-3">
-                {category.skills.map((skill, idx) => (
-                  <motion.span
-                    key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 0.5, delay: (i * 0.1) + (idx * 0.05) }}
-                    whileHover={{ scale: 1.05 }}
-                    className="rounded-full border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors cursor-default"
-                  >
-                    {skill}
-                  </motion.span>
-                ))}
-              </div>
+              </SpotlightCard>
             </motion.div>
           ))}
         </div>
 
-        {/* Experience timeline */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-20"
-        >
-          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-12 text-center">{t('skills.experience.title')}</h3>
+        {/* Experience - Refined */}
+        <div className="mt-56 max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            className="flex flex-col items-center mb-24"
+          >
+            <h3 className="text-4xl font-black tracking-tighter text-slate-900 dark:text-white uppercase italic">The Roadmap</h3>
+            <div className="h-px w-24 bg-slate-200 dark:bg-white/10 mt-6" />
+          </motion.div>
 
-          <div className="space-y-8">
+          <div className="space-y-24 relative">
+            <div className="absolute left-[38px] md:left-[108px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-indigo-500/50 via-slate-200 dark:via-white/5 to-transparent" />
+
             {t('skills.experience.items', { returnObjects: true }).map((exp, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, x: -40 }}
+                initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="flex gap-8 items-start"
+                className="group flex flex-col md:flex-row gap-12 relative z-10"
               >
-                <div className="flex-shrink-0 w-20 text-right">
-                  <span className="text-sm font-medium text-gray-500 dark:text-gray-400">{exp.year}</span>
+                <div className="flex-shrink-0 w-20 md:w-32 pt-2">
+                  <span className="text-3xl font-black text-indigo-500/10 dark:text-indigo-500/20 group-hover:text-indigo-500 transition-colors duration-500 font-mono tracking-tighter italic">{exp.year}</span>
                 </div>
-                <div className="flex-shrink-0 w-px h-16 bg-gray-200 dark:bg-gray-600 mt-2"></div>
-                <div className="flex-1">
-                  <h4 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">{exp.title}</h4>
-                  <p className="text-gray-600 dark:text-gray-300 font-medium mb-2">{exp.company}</p>
-                  <p className="text-gray-600 dark:text-gray-300 font-light">{exp.desc}</p>
+
+                <div className="flex-1 bg-slate-50 dark:bg-white/[0.01] border border-slate-200 dark:border-white/5 p-12 rounded-[40px] group-hover:border-indigo-500/20 transition-all duration-500 relative overflow-hidden">
+                  {/* Point on line */}
+                  <div className="absolute top-1/2 -left-12 w-6 h-6 rounded-full border-4 border-white dark:border-[#000] bg-indigo-500 hidden md:block" />
+
+                  <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+                    <h4 className="text-4xl font-bold text-slate-900 dark:text-white tracking-tight leading-none italic">{exp.title}</h4>
+                    <span className="px-6 py-2 rounded-full border border-indigo-500/10 dark:border-indigo-500/30 text-indigo-500 dark:text-indigo-400 font-black text-[10px] uppercase tracking-[0.2em]">{exp.company}</span>
+                  </div>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium text-xl leading-relaxed opacity-80 italic">"{exp.desc}"</p>
                 </div>
               </motion.div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </section>
   )

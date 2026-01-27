@@ -1,167 +1,121 @@
-import { useEffect, useRef } from 'react'
-import { motion, useMotionValue, useTransform, useReducedMotion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import Squares from './Squares'
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] }
+  }
+}
 
 export default function Hero() {
   const { t } = useTranslation()
-  const sectionRef = useRef(null)
-  const prefersReduced = useReducedMotion()
-
-  // Subtle parallax for Apple-style depth
-  const scrollY = useMotionValue(0)
-  const y1 = useTransform(scrollY, [0, 1000], [0, -100])
-  const y2 = useTransform(scrollY, [0, 1000], [0, -200])
-
-  useEffect(() => {
-    const handleScroll = () => scrollY.set(window.scrollY)
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [scrollY])
 
   return (
-    <section
-      id="home"
-      ref={sectionRef}
-      className="relative min-h-screen w-full overflow-hidden bg-white dark:bg-gray-900"
-    >
-      {/* Apple-style minimal background */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <motion.div
-          style={{ y: y1 }}
-          className="absolute top-20 left-20 h-96 w-96 rounded-full bg-gray-100/50 blur-3xl dark:bg-gray-700/30"
-        />
-        <motion.div
-          style={{ y: y2 }}
-          className="absolute bottom-20 right-20 h-64 w-64 rounded-full bg-gray-50/80 blur-2xl dark:bg-gray-800/50"
-        />
+    <section id="home" className="relative min-h-screen w-full flex items-center justify-center px-6 overflow-hidden bg-white dark:bg-black pt-20 transition-colors duration-500">
+      {/* Dynamic Background */}
+      <div className="absolute inset-0 z-0">
+        <div className="opacity-10 dark:opacity-100 transition-opacity duration-500">
+          <Squares
+            direction="down"
+            speed={0.5}
+            squareSize={40}
+            borderColor="rgba(100, 100, 100, 0.1)"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-b from-white dark:from-black via-transparent to-white dark:to-black" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(79,70,229,0.05),transparent_70%)] dark:bg-[radial-gradient(circle_at_50%_50%,rgba(79,70,229,0.1),transparent_70%)]" />
       </div>
 
-      {/* Subtle gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50/30 to-white dark:from-gray-900 dark:via-gray-800/30 dark:to-gray-900" />
-
-      {/* Content - Two columns */}
-      <div className="relative z-10 mx-auto flex min-h-screen max-w-7xl items-center px-6 -mt-16">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center w-full">
-
-          {/* Left side - Text content */}
-          <div className="text-left">
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="mb-6"
-            >
-              <div className="inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50/80 px-4 py-2 text-sm text-gray-600 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80 dark:text-gray-300">
-                <svg className="w-4 h-4 text-green-500 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
+      <div className="relative z-10 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <motion.div
+            initial="hidden"
+            animate="visible"
+            variants={{
+              visible: { transition: { staggerChildren: 0.15 } }
+            }}
+            className="flex flex-col items-start text-left"
+          >
+            {/* Status Badge */}
+            <motion.div variants={fadeUp} className="mb-8">
+              <div className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-slate-100 dark:bg-white/[0.03] border border-slate-200 dark:border-white/10 backdrop-blur-2xl text-[10px] font-bold tracking-widest text-indigo-500 dark:text-indigo-400 uppercase">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-40"></span>
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-indigo-500"></span>
+                </span>
                 {t('hero.available')}
               </div>
             </motion.div>
 
             <motion.h1
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 leading-[1.1] dark:text-white"
+              variants={fadeUp}
+              className="text-5xl sm:text-6xl md:text-8xl lg:text-8xl xl:text-9xl font-black tracking-tighter leading-none text-slate-900 dark:text-white mb-8 flex flex-col items-start transition-colors duration-500"
             >
-              <div className="flex items-center gap-3 mb-2">
-                Ruslan Sattorov
-                <img
+              <span className="flex items-center gap-2 md:gap-4">
+                Ruslan
+                <motion.img
                   src="/galochka.png"
                   alt="Verified"
-                  className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 object-contain"
+                  className="w-8 h-8 sm:w-10 sm:h-10 md:w-16 md:h-16 inline-block"
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 1, type: 'spring' }}
                 />
-              </div>
-              {t('hero.title_part1')}
-              <br />
-              {t('hero.title_part2')}
-              <br />
-              <span className="text-gray-500 dark:text-gray-400">{t('hero.title_part3')}</span>
+              </span>
+              <span>Sattorov</span>
             </motion.h1>
 
-            <motion.p
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-6 max-w-lg text-lg md:text-xl text-gray-600 font-light leading-relaxed dark:text-gray-300"
-            >
-              {t('hero.description')}
-            </motion.p>
+            <motion.div variants={fadeUp} className="max-w-xl mb-12">
+              <p className="text-lg sm:text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed opacity-80 italic transition-colors duration-500">
+                "{t('hero.title_part1')} {t('hero.title_part2')}. {t('hero.description')}"
+              </p>
+            </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 1, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="mt-8 flex flex-wrap items-center gap-4"
-            >
-              <motion.a
-                whileHover={{ y: -2 }}
-                whileTap={{ y: 0 }}
+            <motion.div variants={fadeUp} className="flex flex-wrap items-center gap-6">
+              <a
                 href="#projects"
-                className="rounded-full bg-gray-900 px-7 py-3.5 text-white font-medium hover:bg-gray-800 transition-colors shadow-lg dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+                className="px-10 py-5 bg-slate-900 dark:bg-white text-white dark:text-black font-black rounded-2xl text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-indigo-500/20"
               >
                 {t('hero.view_projects')}
-              </motion.a>
-              <motion.a
-                whileHover={{ y: -2 }}
-                whileTap={{ y: 0 }}
+              </a>
+
+              <a
                 href="#contact"
-                className="rounded-full border border-gray-300 px-7 py-3.5 text-gray-700 font-medium hover:bg-gray-50 transition-colors dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                className="px-10 py-5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-black rounded-2xl text-sm uppercase tracking-widest hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
               >
                 {t('hero.contact')}
-              </motion.a>
+              </a>
             </motion.div>
+          </motion.div>
 
-            {/* Tech tags */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-              className="mt-10 flex flex-wrap gap-3"
-            >
-              {['React', 'Next.js', 'Tailwind CSS', 'Framer Motion'].map((tech) => (
-                <span
-                  key={tech}
-                  className="rounded-full border border-gray-200 bg-white/80 px-4 py-2 text-sm text-gray-600 backdrop-blur-sm dark:border-gray-700 dark:bg-gray-800/80 dark:text-gray-300"
-                >
-                  {tech}
-                </span>
-              ))}
-            </motion.div>
-          </div>
-
-          {/* Right side - Hero Image */}
+          {/* Hero Image */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, x: 50 }}
+            initial={{ opacity: 0, scale: 0.8, x: 50 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
-            transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-            className="relative flex items-center justify-center"
+            transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
+            className="relative hidden lg:block"
           >
-            {/* Main image */}
-            <motion.div
-              style={{ y: prefersReduced ? 0 : y1 }}
-              className="relative"
-            >
-              {/* Light mode image */}
+            <div className="relative aspect-square max-w-[600px] ml-auto">
+              {/* Decorative rings */}
+              <div className="absolute inset-0 rounded-full border border-indigo-500/10 dark:border-indigo-500/20 animate-[spin_20s_linear_infinite]" />
+              <div className="absolute -inset-4 rounded-full border border-slate-200 dark:border-white/5 animate-[spin_30s_linear_infinite_reverse]" />
+
               <img
                 src="/ruslan-hero.png"
-                alt="Ruslan"
-                className="w-full max-w-md lg:max-w-lg xl:max-w-xl h-auto object-contain dark:hidden"
+                alt="Ruslan Sattorov"
+                className="relative z-10 w-full h-full object-contain filter drop-shadow-[0_0_50px_rgba(79,70,229,0.2)]"
               />
-              {/* Dark mode image */}
-              <img
-                src="/ruslan-hero-white.png"
-                alt="Ruslan"
-                className="w-full max-w-md lg:max-w-lg xl:max-w-xl h-auto object-contain hidden dark:block"
-              />
-            </motion.div>
+
+              {/* Glow effects */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-indigo-500/10 dark:bg-indigo-500/20 blur-[120px] rounded-full z-0" />
+            </div>
           </motion.div>
         </div>
       </div>
-
-      {/* Simple bottom line */}
-      <div className="relative z-10 h-px w-full bg-gray-200 dark:bg-gray-700" />
     </section>
   )
 }

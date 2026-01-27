@@ -1,113 +1,87 @@
-import { motion, useScroll, useTransform } from 'framer-motion'
-import { useRef } from 'react'
+import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import SpotlightCard from './SpotlightCard'
+import BlurText from './BlurText'
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
+  }
+}
 
 export default function About() {
   const { t } = useTranslation()
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -50])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -100])
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -150])
 
   return (
-    <section id="about" ref={ref} className="relative w-full bg-gray-50 py-32 dark:bg-gray-800">
-      {/* Apple-style subtle background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-white via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
-
-      <div className="relative mx-auto max-w-6xl px-6">
+    <section id="about" className="relative w-full bg-white dark:bg-[#000] py-40 overflow-hidden transition-colors duration-500">
+      <div className="relative z-10 mx-auto max-w-7xl px-6">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-          className="mb-16 text-center"
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          variants={{
+            visible: { transition: { staggerChildren: 0.1 } }
+          }}
+          className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start relative"
         >
-          <h2 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4 dark:text-white">{t('about.title')}</h2>
-          <p className="text-xl text-gray-600 font-light max-w-2xl mx-auto dark:text-gray-300">
-            {t('about.subtitle')}
-          </p>
-        </motion.div>
+          <div className="lg:col-span-5 lg:sticky lg:top-32 self-start">
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-4 mb-8">
+              <div className="h-[2px] w-12 bg-indigo-500" />
+              <span className="text-indigo-500 font-black text-[11px] uppercase tracking-[0.5em]">The Essence</span>
+            </motion.div>
 
-        <div className="relative grid grid-cols-1 gap-8 md:grid-cols-3">
-          <motion.div
-            style={{ y: y1 }}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="group rounded-3xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-lg transition-all duration-500 dark:border-gray-700 dark:bg-gray-900"
-          >
-            <div className="mb-6 h-12 w-12 rounded-2xl bg-gray-50 flex items-center justify-center dark:bg-gray-800">
-              <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4 dark:text-white">{t('about.goal.title')}</h3>
-            <p className="text-gray-600 font-light leading-relaxed dark:text-gray-300">
-              {t('about.goal.desc')}
-            </p>
-          </motion.div>
+            <BlurText
+              text="ABOUT ME"
+              className="text-5xl sm:text-6xl md:text-8xl lg:text-8xl xl:text-9xl font-black tracking-tighter text-slate-900 dark:text-white mb-10 leading-[0.85] uppercase italic"
+              delay={150}
+              animateBy="words"
+              direction="top"
+            />
 
-          <motion.div
-            style={{ y: y2 }}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="group rounded-3xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-lg transition-all duration-500 dark:border-gray-700 dark:bg-gray-900"
-          >
-            <div className="mb-6 h-12 w-12 rounded-2xl bg-gray-50 flex items-center justify-center dark:bg-gray-800">
-              <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4 dark:text-white">{t('about.approach.title')}</h3>
-            <p className="text-gray-600 font-light leading-relaxed dark:text-gray-300">
-              {t('about.approach.desc')}
-            </p>
-          </motion.div>
+            <motion.p variants={fadeUp} className="text-xl md:text-2xl text-slate-500 dark:text-slate-400 font-medium leading-relaxed opacity-90 max-w-md italic">
+              {t('about.subtitle')}
+            </motion.p>
+          </div>
 
-          <motion.div
-            style={{ y: y3 }}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="group rounded-3xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-lg transition-all duration-500 dark:border-gray-700 dark:bg-gray-900"
-          >
-            <div className="mb-6 h-12 w-12 rounded-2xl bg-gray-50 flex items-center justify-center dark:bg-gray-800">
-              <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
-              </svg>
-            </div>
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4 dark:text-white">{t('about.focus.title')}</h3>
-            <p className="text-gray-600 font-light leading-relaxed dark:text-gray-300">
-              {t('about.focus.desc')}
-            </p>
-          </motion.div>
-        </div>
+          <div className="lg:col-span-7 space-y-8">
+            {[
+              { title: t('about.goal.title'), desc: t('about.goal.desc') },
+              { title: t('about.approach.title'), desc: t('about.approach.desc') },
+              { title: t('about.focus.title'), desc: t('about.focus.desc') }
+            ].map((item, i) => (
+              <motion.div key={i} variants={fadeUp}>
+                <SpotlightCard
+                  spotlightColor="rgba(99, 102, 241, 0.1)"
+                  className="p-12 md:p-16 border border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/[0.01] rounded-[48px]"
+                >
+                  <h3 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white mb-6">
+                    {item.title}
+                  </h3>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed text-xl opacity-80">
+                    {item.desc}
+                  </p>
+                </SpotlightCard>
+              </motion.div>
+            ))}
 
-        {/* Apple-style stats section */}
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8"
-        >
-          {[
-            { number: '50+', label: t('about.stats.projects') },
-            { number: '3+', label: t('about.stats.experience') },
-            { number: '100%', label: t('about.stats.satisfaction') },
-            { number: '24/7', label: t('about.stats.support') }
-          ].map((stat, i) => (
-            <div key={i} className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-gray-900 mb-2 dark:text-white">{stat.number}</div>
-              <div className="text-gray-600 font-light dark:text-gray-300">{stat.label}</div>
-            </div>
-          ))}
+            {/* Exp Grid */}
+            <motion.div variants={fadeUp} className="grid grid-cols-2 gap-4 pt-10">
+              {[
+                { number: '50+', label: t('about.stats.projects') },
+                { number: '3+', label: t('about.stats.experience') },
+                { number: '100%', label: t('about.stats.satisfaction') },
+                { number: '24/7', label: t('about.stats.support') }
+              ].map((stat, i) => (
+                <div key={i} className="p-10 rounded-[32px] bg-slate-100 dark:bg-white/[0.02] border border-slate-200 dark:border-white/5 text-center group hover:bg-indigo-500/10 transition-colors">
+                  <div className="text-5xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter group-hover:scale-110 transition-transform">{stat.number}</div>
+                  <div className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-slate-600 group-hover:text-indigo-500 transition-colors">{stat.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
         </motion.div>
       </div>
     </section>
